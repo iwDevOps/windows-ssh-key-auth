@@ -34,3 +34,54 @@ if (!(Get-NetFirewallRule -Name "OpenSSH-Server-In-TCP" -ErrorAction SilentlyCon
 ```powershell
 ssh domain\username@servername
 ```
+## SSH Keys
+```powershell
+# Set the sshd service to be started automatically
+Get-Service -Name sshd | Set-Service -StartupType Automatic
+
+# Now start the sshd service
+Start-Service sshd
+```
+## Generate keys
+```powershell
+ssh-keygen -t ed25519
+```
+
+## Enable ssh-agent
+```powershell
+# By default the ssh-agent service is disabled. Configure it to start automatically.
+# Make sure you're running as an Administrator.
+Get-Service ssh-agent | Set-Service -StartupType Automatic
+
+# Start the service
+Start-Service ssh-agent
+
+# This should return a status of Running
+Get-Service ssh-agent
+
+# Now load your key files into ssh-agent
+ssh-add $env:USERPROFILE\.ssh\id_ed25519
+```
+## Deploy keys Standard user
+```powershell
+# Get the public key file generated previously on your client
+$authorizedKey = Get-Content -Path $env:USERPROFILE\.ssh\id_ed25519.pub
+
+# Generate the PowerShell to be run remote that will copy the public key file generated previously on your client to the authorized_keys file on your server
+$remotePowershell = "powershell New-Item -Force -ItemType Directory -Path $env:USERPROFILE\.ssh; Add-Content -Force -Path $env:USERPROFILE\.ssh\authorized_keys -Value '$authorizedKey'"
+
+# Connect to your server and run the PowerShell using the $remotePowerShell variable
+ssh username@domain1@contoso.com $remotePowershell
+```
+## Deploy keys Administrator user
+```powershell
+# Get the public key file generated previously on your client
+$authorizedKey = Get-Content -Path $env:USERPROFILE\.ssh\id_ed25519.pub
+
+# Generate the PowerShell to be run remote that will copy the public key file generated previously on your client to the authorized_keys file on your server
+$remotePowershell = "powershell Add-Content -Force -Path $env:ProgramData\ssh\administrators_authorized_keys -Value '$authorizedKey';icacls.exe ""$env:ProgramData\ssh\administrators_authorized_keys"" /inheritance:r /grant ""Administrators:F"" /grant ""SYSTEM:F"""
+
+# Connect to your server and run the PowerShell using the $remotePowerShell variable
+ssh username@domain1@contoso.com $remotePowershell
+```
+
