@@ -3,7 +3,7 @@
 Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH*'
 ```
 
-## Install components
+## Install Components
 ```powershell
 # Install the OpenSSH Client
 Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
