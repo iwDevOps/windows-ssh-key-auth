@@ -84,4 +84,22 @@ $remotePowershell = "powershell Add-Content -Force -Path $env:ProgramData\ssh\ad
 # Connect to your server and run the PowerShell using the $remotePowerShell variable
 ssh username@domain1@contoso.com $remotePowershell
 ```
+## Update Powershell with winget
+```powershell
+# Search 
+PS >  winget.exe search Microsoft.Powershell
+
+Name               Id                           Version   Source
+-----------------------------------------------------------------
+PowerShell         Microsoft.PowerShell         7.3.9.0   winget
+PowerShell Preview Microsoft.PowerShell.Preview 7.4.0.101 winget
+
+# Install
+PS > winget install --id Microsoft.Powershell --source winget
+
+Downloading https://github.com/PowerShell/PowerShell/releases/download/v7.3.9/PowerShell-7.3.9-win-x64.msi
+  ██████████████████████████████   100 MB /  100 MB
+Successfully verified installer hash
+Starting package install...
+**Successfully installed**
 
